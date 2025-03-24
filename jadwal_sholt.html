@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Sholat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #000000;
+        }
+        h1 {
+            text-align: center;
+            color: #f7f200;
+        }
+        #result {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: rgb(25, 0, 255);
+            border-radius: 5px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #357ae8;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Jadwal Sholat</h1>
+    <label for="city">Masukkan Nama Kota:</label>
+    <input type="text" id="city" placeholder="Contoh: Jakarta">
+    <button onclick="getPrayerSchedule()">Tampilkan Jadwal Sholat</button>
+
+    <div id="result"></div>
+
+    <script>
+        async function getPrayerSchedule() {
+            const city = document.getElementById('city').value;
+            const resultDiv = document.getElementById('result');
+
+            // Menggunakan API Aladhan untuk mendapatkan jadwal sholat
+            const url = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=ID&method=2`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    const timings = data.data.timings;
+                    let schedule = `<h2>Jadwal Sholat di ${city}</h2><ul>`;
+                    schedule += `<li>Imsak: ${timings.Imsak}</li>`;
+                    schedule += `<li>Subuh: ${timings.Fajr}</li>`;
+                    schedule += `<li>Dzuhur: ${timings.Dhuhr}</li>`;
+                    schedule += `<li>Ashar: ${timings.Asr}</li>`;
+                    schedule += `<li>Maghrib: ${timings.Maghrib}</li>`;
+                    schedule += `<li>Isya: ${timings.Isha}</li>`;
+                    schedule += `</ul>`;
+                    resultDiv.innerHTML = schedule;
+                } else {
+                    resultDiv.innerHTML = `<p>Kota tidak ditemukan. Silakan coba kota lain.</p>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p>Terjadi kesalahan saat mengambil data. Silakan coba lagi.</p>`;
+            }
+        }
+    </script>
+
+</body>
+</html>
